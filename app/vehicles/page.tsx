@@ -82,7 +82,7 @@ export default function VehiclesPage() {
 
         <Container className="relative">
           <div className="py-16 md:py-20">
-            <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-3">
+            <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-3">
               Our Fleet
             </p>
             <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
@@ -108,7 +108,7 @@ export default function VehiclesPage() {
                 <SlidersHorizontal className="h-4 w-4" />
                 Filters
                 {activeFiltersCount > 0 && (
-                  <span className="w-5 h-5 bg-[#ff6b5b] text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="w-5 h-5 bg-[#E8AC41] text-white text-xs font-bold rounded-full flex items-center justify-center">
                     {activeFiltersCount}
                   </span>
                 )}

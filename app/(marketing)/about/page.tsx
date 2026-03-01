@@ -60,7 +60,7 @@ export default function AboutPage() {
 
         <Container className="relative">
           <div className="py-20 md:py-28 max-w-3xl">
-            <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-3">
+            <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-3">
               About us
             </p>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
@@ -80,7 +80,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="font-display text-4xl md:text-5xl font-bold text-[#ff6b5b] mb-2">
+                <div className="font-display text-4xl md:text-5xl font-bold text-[#E8AC41] mb-2">
                   {stat.value}
                 </div>
                 <div className="text-slate-600">{stat.label}</div>
@@ -96,7 +96,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left - Content */}
             <div>
-              <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-3">
+              <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-3">
                 Our Story
               </p>
               <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0c2340] mb-6">
@@ -154,7 +154,7 @@ export default function AboutPage() {
       <section className="py-20 md:py-28 bg-[#f7f5f2]">
         <Container>
           <div className="text-center mb-14">
-            <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-3">
+            <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-3">
               Our Journey
             </p>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0c2340]">
@@ -169,7 +169,7 @@ export default function AboutPage() {
                 className="bg-white rounded-2xl p-8 border border-slate-200 animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="font-display text-3xl font-bold text-[#ff6b5b] mb-3">
+                <div className="font-display text-3xl font-bold text-[#E8AC41] mb-3">
                   {item.year}
                 </div>
                 <h3 className="font-display text-lg font-bold text-[#0c2340] mb-2">{item.title}</h3>
@@ -184,7 +184,7 @@ export default function AboutPage() {
       <section className="py-20 md:py-28">
         <Container>
           <div className="text-center mb-14">
-            <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-3">
+            <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-3">
               What we stand for
             </p>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0c2340]">
@@ -199,7 +199,7 @@ export default function AboutPage() {
                 className="group bg-white rounded-2xl p-8 border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="w-12 h-12 bg-[#0c2340] rounded-xl flex items-center justify-center mb-5 group-hover:bg-[#ff6b5b] transition-colors">
+                <div className="w-12 h-12 bg-[#0c2340] rounded-xl flex items-center justify-center mb-5 group-hover:bg-[#E8AC41] transition-colors">
                   <value.icon className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="font-display text-lg font-bold text-[#0c2340] mb-2">{value.title}</h3>
@@ -231,7 +231,7 @@ export default function AboutPage() {
             </p>
             <Link
               href="/vehicles"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-[#ff6b5b] hover:bg-[#e85a4a] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#ff6b5b]/20"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#E8AC41] hover:bg-[#D19830] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#E8AC41]/20"
             >
               Browse Our Fleet
               <ChevronRight className="w-5 h-5" />

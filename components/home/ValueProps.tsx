@@ -40,7 +40,7 @@ export function ValueProps() {
       <Container>
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-2">
+          <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-2">
             Why choose us
           </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0c2340] mb-4">
@@ -59,7 +59,7 @@ export function ValueProps() {
               className="group bg-white rounded-2xl p-8 border border-slate-100 hover:border-slate-200 hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-300 animate-slide-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="w-12 h-12 bg-[#0c2340] rounded-xl flex items-center justify-center mb-5 group-hover:bg-[#ff6b5b] transition-colors">
+              <div className="w-12 h-12 bg-[#0c2340] rounded-xl flex items-center justify-center mb-5 group-hover:bg-[#E8AC41] transition-colors">
                 <prop.icon className="h-6 w-6 text-white" />
               </div>
               <h3 className="font-display text-lg font-bold text-[#0c2340] mb-2">

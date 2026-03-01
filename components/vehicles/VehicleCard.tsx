@@ -40,7 +40,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
         {/* Content */}
         <div className="p-5">
           {/* Title */}
-          <h3 className="font-display font-bold text-[#0c2340] text-lg mb-1 group-hover:text-[#ff6b5b] transition-colors">
+          <h3 className="font-display font-bold text-[#0c2340] text-lg mb-1 group-hover:text-[#E8AC41] transition-colors">
             {vehicle.make} {vehicle.model}
           </h3>
           <p className="text-sm text-slate-500 mb-4">{vehicle.year}</p>
@@ -69,7 +69,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               </span>
               <span className="text-slate-500 text-sm">/day</span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-[#ff6b5b] flex items-center justify-center group-hover:bg-[#e85a4a] transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-[#E8AC41] flex items-center justify-center group-hover:bg-[#D19830] transition-colors">
               <ArrowRight className="h-5 w-5 text-white group-hover:translate-x-0.5 transition-transform" />
             </div>
           </div>

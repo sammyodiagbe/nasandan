@@ -10,8 +10,8 @@
   /* Brand colors */
   --navy: #0c2340;
   --navy-light: #1a3a5c;
-  --coral: #ff6b5b;
-  --coral-dark: #e85a4a;
+  --coral: #E8AC41;
+  --coral-dark: #D19830;
   --sand: #f7f5f2;
   --sand-dark: #ebe7e0;
 
@@ -82,7 +82,7 @@ body {
 
 /* Selection */
 ::selection {
-  background: rgba(255, 107, 91, 0.2);
+  background: rgba(232, 172, 65, 0.2);
   color: inherit;
 }
 
@@ -230,7 +230,7 @@ body {
 .btn-primary:hover:not(:disabled) {
   background: var(--coral-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 107, 91, 0.3);
+  box-shadow: 0 4px 12px rgba(232, 172, 65, 0.3);
 }
 
 /* Secondary button - Navy outline */
@@ -389,7 +389,7 @@ body {
 /* Focus ring */
 .focus-ring:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 107, 91, 0.3);
+  box-shadow: 0 0 0 3px rgba(232, 172, 65, 0.3);
 }
 
 /* ============================================
@@ -432,7 +432,7 @@ input[type="checkbox"]:checked {
 }
 
 input[type="checkbox"]:focus {
-  box-shadow: 0 0 0 3px rgba(255, 107, 91, 0.2);
+  box-shadow: 0 0 0 3px rgba(232, 172, 65, 0.2);
 }
 
 /* ============================================

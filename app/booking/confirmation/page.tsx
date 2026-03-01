@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, Calendar, MapPin, Printer, Home } from 'lucide-react';
@@ -9,7 +10,7 @@ import { Card, CardContent, Button, Badge } from '@/components/ui';
 import { getBookingByConfirmation, getVehicleById } from '@/data';
 import { formatDate, formatTime, formatCurrency } from '@/lib/utils';
 
-export default function BookingConfirmationPage() {
+function BookingConfirmationContent() {
   const searchParams = useSearchParams();
   const confirmationNumber = searchParams.get('confirmation');
 
@@ -189,5 +190,26 @@ export default function BookingConfirmationPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function BookingConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 bg-gray-50 py-16">
+          <Container size="md">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-slate-200 border-t-[#E8AC41] rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-slate-600">Loading confirmation...</p>
+            </div>
+          </Container>
+        </main>
+        <Footer />
+      </div>
+    }>
+      <BookingConfirmationContent />
+    </Suspense>
   );
 }

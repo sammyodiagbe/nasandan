@@ -68,7 +68,7 @@ export default function ContactPage() {
 
         <Container className="relative">
           <div className="py-20 md:py-28 max-w-3xl">
-            <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-3">
+            <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-3">
               Contact us
             </p>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
@@ -96,7 +96,7 @@ export default function ContactPage() {
                 </div>
                 <h3 className="font-display font-bold text-[#0c2340] mb-2">{item.title}</h3>
                 {item.href ? (
-                  <a href={item.href} className="text-slate-600 hover:text-[#ff6b5b] transition-colors text-sm">
+                  <a href={item.href} className="text-slate-600 hover:text-[#E8AC41] transition-colors text-sm">
                     {item.content}
                   </a>
                 ) : (
@@ -114,7 +114,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
             {/* Left - Info */}
             <div>
-              <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-3">
+              <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-3">
                 Let&apos;s talk
               </p>
               <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0c2340] mb-6">
@@ -131,11 +131,11 @@ export default function ContactPage() {
                 <div className="space-y-5">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-5 h-5 text-[#ff6b5b]" />
+                      <Phone className="w-5 h-5 text-[#E8AC41]" />
                     </div>
                     <div>
                       <p className="text-white/60 text-sm">Call us anytime</p>
-                      <a href={`tel:${siteConfig.phone}`} className="text-white font-semibold hover:text-[#ff6b5b] transition-colors">
+                      <a href={`tel:${siteConfig.phone}`} className="text-white font-semibold hover:text-[#E8AC41] transition-colors">
                         {siteConfig.phone}
                       </a>
                     </div>
@@ -143,11 +143,11 @@ export default function ContactPage() {
 
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-5 h-5 text-[#ff6b5b]" />
+                      <Mail className="w-5 h-5 text-[#E8AC41]" />
                     </div>
                     <div>
                       <p className="text-white/60 text-sm">Email us at</p>
-                      <a href={`mailto:${siteConfig.email}`} className="text-white font-semibold hover:text-[#ff6b5b] transition-colors">
+                      <a href={`mailto:${siteConfig.email}`} className="text-white font-semibold hover:text-[#E8AC41] transition-colors">
                         {siteConfig.email}
                       </a>
                     </div>
@@ -155,7 +155,7 @@ export default function ContactPage() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-5 h-5 text-[#ff6b5b]" />
+                      <MapPin className="w-5 h-5 text-[#E8AC41]" />
                     </div>
                     <div>
                       <p className="text-white/60 text-sm">Visit our office</p>
@@ -252,7 +252,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full md:w-auto px-8 py-4 bg-[#ff6b5b] hover:bg-[#e85a4a] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#ff6b5b]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full md:w-auto px-8 py-4 bg-[#E8AC41] hover:bg-[#D19830] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#E8AC41]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <>

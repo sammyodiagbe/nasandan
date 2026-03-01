@@ -33,12 +33,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       'relative inline-flex items-center justify-center font-semibold font-display transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 rounded-xl overflow-hidden';
 
     const variants = {
-      primary: 'bg-[#ff6b5b] text-white hover:bg-[#e85a4a] active:bg-[#d64a3a] focus-visible:ring-[#ff6b5b] shadow-lg shadow-[#ff6b5b]/20 hover:shadow-xl hover:shadow-[#ff6b5b]/25 hover:-translate-y-0.5',
+      primary: 'bg-[#E8AC41] text-white hover:bg-[#D19830] active:bg-[#B8871F] focus-visible:ring-[#E8AC41] shadow-lg shadow-[#E8AC41]/20 hover:shadow-xl hover:shadow-[#E8AC41]/25 hover:-translate-y-0.5',
       secondary: 'bg-slate-100 text-[#0c2340] hover:bg-slate-200 active:bg-slate-300 focus-visible:ring-slate-400',
       outline: 'border-2 border-[#0c2340] bg-transparent text-[#0c2340] hover:bg-[#0c2340] hover:text-white focus-visible:ring-[#0c2340]',
       ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-[#0c2340] focus-visible:ring-slate-400',
       danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus-visible:ring-red-600 shadow-lg shadow-red-600/20',
-      gradient: 'bg-[#ff6b5b] text-white hover:bg-[#e85a4a] shadow-lg shadow-[#ff6b5b]/20 hover:shadow-xl hover:shadow-[#ff6b5b]/25 hover:-translate-y-0.5',
+      gradient: 'bg-[#E8AC41] text-white hover:bg-[#D19830] shadow-lg shadow-[#E8AC41]/20 hover:shadow-xl hover:shadow-[#E8AC41]/25 hover:-translate-y-0.5',
     };
 
     const sizes = {

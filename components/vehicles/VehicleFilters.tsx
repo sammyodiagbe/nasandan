@@ -62,7 +62,7 @@ export function VehicleFilters({ filters, onFilterChange, onReset }: VehicleFilt
           </div>
           <span className="font-display font-bold text-[#0c2340]">Filters</span>
           {activeCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-semibold bg-[#ff6b5b]/10 text-[#ff6b5b] rounded-full">
+            <span className="px-2 py-0.5 text-xs font-semibold bg-[#E8AC41]/10 text-[#E8AC41] rounded-full">
               {activeCount}
             </span>
           )}
@@ -70,7 +70,7 @@ export function VehicleFilters({ filters, onFilterChange, onReset }: VehicleFilt
         {hasActiveFilters && (
           <button
             onClick={onReset}
-            className="text-sm text-slate-500 hover:text-[#ff6b5b] flex items-center gap-1 transition-colors"
+            className="text-sm text-slate-500 hover:text-[#E8AC41] flex items-center gap-1 transition-colors"
           >
             <X className="h-4 w-4" />
             Clear all
@@ -96,7 +96,7 @@ export function VehicleFilters({ filters, onFilterChange, onReset }: VehicleFilt
                   type="checkbox"
                   checked={filters.categories.includes(key)}
                   onChange={() => toggleCategory(key)}
-                  className="w-5 h-5 rounded border-2 border-slate-300 text-[#ff6b5b] focus:ring-[#ff6b5b]/20 focus:ring-offset-0 transition-colors cursor-pointer"
+                  className="w-5 h-5 rounded border-2 border-slate-300 text-[#E8AC41] focus:ring-[#E8AC41]/20 focus:ring-offset-0 transition-colors cursor-pointer"
                 />
                 <span className="text-sm text-slate-600 group-hover:text-[#0c2340] transition-colors">
                   {label}
@@ -127,7 +127,7 @@ export function VehicleFilters({ filters, onFilterChange, onReset }: VehicleFilt
                 type="checkbox"
                 checked={filters.transmission.includes(key)}
                 onChange={() => toggleTransmission(key)}
-                className="w-5 h-5 rounded border-2 border-slate-300 text-[#ff6b5b] focus:ring-[#ff6b5b]/20 focus:ring-offset-0 transition-colors cursor-pointer"
+                className="w-5 h-5 rounded border-2 border-slate-300 text-[#E8AC41] focus:ring-[#E8AC41]/20 focus:ring-offset-0 transition-colors cursor-pointer"
               />
               <span className="text-sm text-slate-600 group-hover:text-[#0c2340] transition-colors">
                 {label}
@@ -159,7 +159,7 @@ export function VehicleFilters({ filters, onFilterChange, onReset }: VehicleFilt
                 type="checkbox"
                 checked={filters.fuelType.includes(key)}
                 onChange={() => toggleFuelType(key)}
-                className="w-5 h-5 rounded border-2 border-slate-300 text-[#ff6b5b] focus:ring-[#ff6b5b]/20 focus:ring-offset-0 transition-colors cursor-pointer"
+                className="w-5 h-5 rounded border-2 border-slate-300 text-[#E8AC41] focus:ring-[#E8AC41]/20 focus:ring-offset-0 transition-colors cursor-pointer"
               />
               <span className="text-sm text-slate-600 group-hover:text-[#0c2340] transition-colors">
                 {label}
@@ -190,7 +190,7 @@ function FilterSection({ title, isOpen, onToggle, count, children }: FilterSecti
         <span className="font-semibold text-[#0c2340] flex items-center gap-2">
           {title}
           {count && count > 0 && (
-            <span className="px-1.5 py-0.5 text-xs font-semibold bg-[#ff6b5b]/10 text-[#ff6b5b] rounded">
+            <span className="px-1.5 py-0.5 text-xs font-semibold bg-[#E8AC41]/10 text-[#E8AC41] rounded">
               {count}
             </span>
           )}

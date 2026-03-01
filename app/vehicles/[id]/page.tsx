@@ -211,7 +211,7 @@ export default function VehicleDetailPage({ params }: VehicleDetailPageProps) {
                 <button
                   onClick={handleBookNow}
                   disabled={vehicle.status !== 'available'}
-                  className="w-full py-4 bg-[#ff6b5b] hover:bg-[#e85a4a] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#ff6b5b]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
+                  className="w-full py-4 bg-[#E8AC41] hover:bg-[#D19830] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#E8AC41]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
                 >
                   <Calendar className="h-5 w-5" />
                   {vehicle.status === 'available' ? 'Book Now' : 'Not Available'}

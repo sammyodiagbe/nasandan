@@ -13,7 +13,7 @@ export function FeaturedVehicles() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
           <div>
-            <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-2">
+            <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-2">
               Popular choices
             </p>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0c2340]">
@@ -22,7 +22,7 @@ export function FeaturedVehicles() {
           </div>
           <Link
             href="/vehicles"
-            className="group inline-flex items-center gap-2 text-[#0c2340] font-semibold hover:text-[#ff6b5b] transition-colors"
+            className="group inline-flex items-center gap-2 text-[#0c2340] font-semibold hover:text-[#E8AC41] transition-colors"
           >
             View all vehicles
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

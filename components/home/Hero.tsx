@@ -48,7 +48,7 @@ export function Hero() {
       </div>
 
       {/* Accent glow */}
-      <div className="absolute top-20 right-[10%] w-[500px] h-[500px] bg-[#ff6b5b]/20 rounded-full blur-[150px]" />
+      <div className="absolute top-20 right-[10%] w-[500px] h-[500px] bg-[#E8AC41]/20 rounded-full blur-[150px]" />
 
       <Container className="relative z-10 py-24 md:py-32">
         <div className="max-w-4xl mx-auto">
@@ -71,7 +71,7 @@ export function Hero() {
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight">
               Find your perfect
               <br />
-              <span className="text-[#ff6b5b]">rental car</span>
+              <span className="text-[#E8AC41]">rental car</span>
             </h1>
             <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
               Compare deals from top car rental companies. Book online in seconds with free cancellation on most bookings.
@@ -141,7 +141,7 @@ export function Hero() {
                 <div className="flex items-end">
                   <button
                     onClick={handleSearch}
-                    className="w-full md:w-auto px-8 py-3.5 bg-[#ff6b5b] hover:bg-[#e85a4a] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#ff6b5b]/25 flex items-center justify-center gap-2"
+                    className="w-full md:w-auto px-8 py-3.5 bg-[#E8AC41] hover:bg-[#D19830] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#E8AC41]/25 flex items-center justify-center gap-2"
                   >
                     <Search className="h-5 w-5" />
                     <span>Search</span>

@@ -34,7 +34,7 @@ export default function HomePage() {
       <section className="py-20 md:py-28 bg-white">
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <p className="text-[#ff6b5b] font-semibold text-sm uppercase tracking-wide mb-2">
+            <p className="text-[#E8AC41] font-semibold text-sm uppercase tracking-wide mb-2">
               Customer reviews
             </p>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0c2340]">
@@ -50,8 +50,8 @@ export default function HomePage() {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Quote icon */}
-                <div className="w-10 h-10 bg-[#ff6b5b]/10 rounded-xl flex items-center justify-center mb-6">
-                  <Quote className="h-5 w-5 text-[#ff6b5b]" />
+                <div className="w-10 h-10 bg-[#E8AC41]/10 rounded-xl flex items-center justify-center mb-6">
+                  <Quote className="h-5 w-5 text-[#E8AC41]" />
                 </div>
 
                 {/* Rating */}
@@ -101,7 +101,7 @@ export default function HomePage() {
                 className="text-center animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="font-display text-4xl md:text-5xl font-bold text-[#ff6b5b] mb-2">
+                <div className="font-display text-4xl md:text-5xl font-bold text-[#E8AC41] mb-2">
                   {stat.value}
                 </div>
                 <div className="text-white/60">{stat.label}</div>

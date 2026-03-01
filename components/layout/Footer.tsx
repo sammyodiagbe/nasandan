@@ -29,7 +29,7 @@ export function Footer() {
             </div>
             <Link
               href="/vehicles"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-[#ff6b5b] hover:bg-[#e85a4a] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#ff6b5b]/20"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#E8AC41] hover:bg-[#D19830] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-[#E8AC41]/20"
             >
               Browse Vehicles
               <ArrowRight className="h-5 w-5" />
@@ -44,7 +44,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-6">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 bg-[#ff6b5b] rounded-lg flex items-center justify-center">
+              <div className="w-9 h-9 bg-[#E8AC41] rounded-lg flex items-center justify-center">
                 <Car className="h-5 w-5 text-white" />
               </div>
               <span className="font-display font-bold text-xl">Nasandan</span>
@@ -109,20 +109,20 @@ export function Footer() {
             <h4 className="font-display font-semibold text-lg mb-6">Contact Us</h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 flex-shrink-0 mt-0.5 text-[#ff6b5b]" />
+                <MapPin className="h-5 w-5 flex-shrink-0 mt-0.5 text-[#E8AC41]" />
                 <span className="text-white/60">
                   {siteConfig.address.street}<br />
                   {siteConfig.address.city}, {siteConfig.address.state} {siteConfig.address.zipCode}
                 </span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="h-5 w-5 flex-shrink-0 text-[#ff6b5b]" />
+                <Phone className="h-5 w-5 flex-shrink-0 text-[#E8AC41]" />
                 <a href={`tel:${siteConfig.phone}`} className="text-white/60 hover:text-white transition-colors">
                   {siteConfig.phone}
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="h-5 w-5 flex-shrink-0 text-[#ff6b5b]" />
+                <Mail className="h-5 w-5 flex-shrink-0 text-[#E8AC41]" />
                 <a href={`mailto:${siteConfig.email}`} className="text-white/60 hover:text-white transition-colors">
                   {siteConfig.email}
                 </a>

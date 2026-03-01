@@ -76,7 +76,7 @@ export function Header() {
                   'px-4 py-2 text-[15px] font-medium rounded-lg transition-all',
                   pathname === item.href
                     ? showSolidHeader
-                      ? 'text-[#ff6b5b] bg-[#ff6b5b]/5'
+                      ? 'text-[#E8AC41] bg-[#E8AC41]/5'
                       : 'text-white bg-white/15'
                     : showSolidHeader
                       ? 'text-slate-600 hover:text-[#0c2340] hover:bg-slate-50'
@@ -155,7 +155,7 @@ export function Header() {
                   </button>
                 </Link>
                 <Link href="/account/register">
-                  <button className="px-5 py-2.5 bg-[#ff6b5b] hover:bg-[#e85a4a] text-white text-[15px] font-semibold rounded-lg transition-all hover:shadow-md hover:shadow-[#ff6b5b]/20">
+                  <button className="px-5 py-2.5 bg-[#E8AC41] hover:bg-[#D19830] text-white text-[15px] font-semibold rounded-lg transition-all hover:shadow-md hover:shadow-[#E8AC41]/20">
                     Get Started
                   </button>
                 </Link>
@@ -190,7 +190,7 @@ export function Header() {
                   className={cn(
                     'block py-3 px-4 rounded-lg text-base font-medium transition-colors',
                     pathname === item.href
-                      ? 'text-[#ff6b5b] bg-[#ff6b5b]/5'
+                      ? 'text-[#E8AC41] bg-[#E8AC41]/5'
                       : 'text-slate-600 hover:bg-slate-50'
                   )}
                   onClick={() => setMobileMenuOpen(false)}
@@ -229,7 +229,7 @@ export function Header() {
                     </button>
                   </Link>
                   <Link href="/account/register" className="flex-1">
-                    <button className="w-full py-3 px-4 bg-[#ff6b5b] text-white font-semibold rounded-lg hover:bg-[#e85a4a] transition-colors">
+                    <button className="w-full py-3 px-4 bg-[#E8AC41] text-white font-semibold rounded-lg hover:bg-[#D19830] transition-colors">
                       Sign Up
                     </button>
                   </Link>
