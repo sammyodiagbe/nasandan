@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Phone, Calendar, CreditCard } from 'lucide-react';
+import { User, Phone, Calendar, CreditCard, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Input, Button } from '@/components/ui';
 import { useBooking } from '@/lib/context';
 
@@ -16,6 +16,7 @@ export function CustomerInfoForm({ onBack, onSubmit, isSubmitting }: CustomerInf
 
   const [formData, setFormData] = useState({
     fullName: '',
+    email: '',
     age: '',
     phone: '',
     hasFullLicense: null as boolean | null,
@@ -39,6 +40,12 @@ export function CustomerInfoForm({ onBack, onSubmit, isSubmitting }: CustomerInf
 
     if (!formData.fullName.trim()) {
       newErrors.fullName = 'Full name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
 
     if (!formData.age) {
@@ -75,7 +82,7 @@ export function CustomerInfoForm({ onBack, onSubmit, isSubmitting }: CustomerInf
     setCustomerInfo({
       firstName: formData.fullName.split(' ')[0] || '',
       lastName: formData.fullName.split(' ').slice(1).join(' ') || '',
-      email: '',
+      email: formData.email,
       phone: formData.phone,
       dateOfBirth: '',
       driversLicenseNumber: '',
@@ -113,6 +120,22 @@ export function CustomerInfoForm({ onBack, onSubmit, isSubmitting }: CustomerInf
             onChange={(e) => handleChange('fullName', e.target.value)}
             error={errors.fullName}
           />
+        </div>
+
+        {/* Email */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <Mail className="h-4 w-4 inline mr-1.5" />
+            Email Address
+          </label>
+          <Input
+            type="email"
+            placeholder="Enter your email address"
+            value={formData.email}
+            onChange={(e) => handleChange('email', e.target.value)}
+            error={errors.email}
+          />
+          <p className="text-xs text-slate-500 mt-1">We&apos;ll send booking confirmation to this email</p>
         </div>
 
         {/* Age */}

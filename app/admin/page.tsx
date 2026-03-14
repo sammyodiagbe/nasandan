@@ -1,18 +1,156 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Plus, Calendar, Car as CarIcon } from 'lucide-react';
+import { ArrowRight, Plus, Calendar, Car as CarIcon, Users, DollarSign, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Badge } from '@/components/ui';
-import { DashboardStats, BookingTable } from '@/components/admin';
-import { getRecentBookings, vehicles } from '@/data';
-import { useAdminAuth } from '@/lib/context';
+import { LoadingSpinner } from '@/components/shared';
+import { useAdminAuth, useToast } from '@/lib/context';
+import { supabase } from '@/lib/supabase';
+import { formatCurrency } from '@/lib/utils';
+import { format } from 'date-fns';
+import type { BookingStatus } from '@/types';
+import { BOOKING_STATUS_LABELS } from '@/types';
+
+interface DashboardBooking {
+  id: string;
+  confirmation_number: string | null;
+  customer_name: string;
+  customer_phone: string | null;
+  start_date: string;
+  end_date: string;
+  total_price: number;
+  status: BookingStatus;
+  created_at: string;
+  cars: {
+    make: string;
+    model: string;
+    year: number;
+  }[] | null;
+}
+
+interface DashboardStats {
+  totalBookings: number;
+  pendingBookings: number;
+  totalRevenue: number;
+  totalVehicles: number;
+}
 
 export default function AdminDashboardPage() {
   const { admin } = useAdminAuth();
-  const recentBookings = getRecentBookings(5);
+  const { showToast } = useToast();
+  const [recentBookings, setRecentBookings] = useState<DashboardBooking[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalBookings: 0,
+    pendingBookings: 0,
+    totalRevenue: 0,
+    totalVehicles: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        // Fetch recent bookings
+        const { data: bookings, error: bookingsError } = await supabase
+          .from('bookings')
+          .select(`
+            id,
+            confirmation_number,
+            customer_name,
+            customer_phone,
+            start_date,
+            end_date,
+            total_price,
+            status,
+            created_at,
+            cars (
+              make,
+              model,
+              year
+            )
+          `)
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+        if (bookingsError) throw bookingsError;
+        setRecentBookings(bookings || []);
+
+        // Fetch stats
+        const { count: totalBookings } = await supabase
+          .from('bookings')
+          .select('*', { count: 'exact', head: true });
+
+        const { count: pendingBookings } = await supabase
+          .from('bookings')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending');
+
+        const { data: revenueData } = await supabase
+          .from('bookings')
+          .select('total_price')
+          .in('status', ['confirmed', 'active', 'completed']);
+
+        const totalRevenue = revenueData?.reduce((sum, b) => sum + Number(b.total_price), 0) || 0;
+
+        const { count: totalVehicles } = await supabase
+          .from('cars')
+          .select('*', { count: 'exact', head: true });
+
+        setStats({
+          totalBookings: totalBookings || 0,
+          pendingBookings: pendingBookings || 0,
+          totalRevenue,
+          totalVehicles: totalVehicles || 0,
+        });
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        showToast('Failed to load dashboard data', 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchDashboardData();
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('dashboard-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'bookings' },
+        () => {
+          fetchDashboardData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [showToast]);
+
+  const getStatusBadgeVariant = (status: BookingStatus) => {
+    switch (status) {
+      case 'pending': return 'warning';
+      case 'confirmed': return 'info';
+      case 'active': return 'success';
+      case 'completed': return 'gray';
+      case 'cancelled': return 'danger';
+      default: return 'default';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8 p-2">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -34,7 +172,63 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stats */}
-      <DashboardStats />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-500">Total Bookings</p>
+                <p className="text-3xl font-bold text-slate-900">{stats.totalBookings}</p>
+              </div>
+              <div className="p-3 rounded-xl bg-blue-100">
+                <Calendar className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-500">Pending Review</p>
+                <p className="text-3xl font-bold text-amber-600">{stats.pendingBookings}</p>
+              </div>
+              <div className="p-3 rounded-xl bg-amber-100">
+                <Clock className="h-6 w-6 text-amber-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-500">Total Revenue</p>
+                <p className="text-3xl font-bold text-emerald-600">{formatCurrency(stats.totalRevenue)}</p>
+              </div>
+              <div className="p-3 rounded-xl bg-emerald-100">
+                <DollarSign className="h-6 w-6 text-emerald-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-500">Fleet Size</p>
+                <p className="text-3xl font-bold text-slate-900">{stats.totalVehicles}</p>
+              </div>
+              <div className="p-3 rounded-xl bg-purple-100">
+                <CarIcon className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Bookings */}
@@ -48,44 +242,74 @@ export default function AdminDashboardPage() {
             </Link>
           </CardHeader>
           <CardContent className="p-0">
-            <BookingTable bookings={recentBookings} />
+            {recentBookings.length === 0 ? (
+              <div className="text-center py-8 text-slate-500">
+                No bookings yet
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Booking</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vehicle</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {recentBookings.map((booking) => (
+                      <tr key={booking.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <Link href={`/admin/bookings/${booking.id}`} className="hover:underline">
+                            <p className="font-mono text-sm font-medium text-gray-900">
+                              {booking.confirmation_number || 'N/A'}
+                            </p>
+                            <p className="text-xs text-gray-500">{booking.customer_name}</p>
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-700">
+                          {booking.cars && booking.cars[0]
+                            ? `${booking.cars[0].year} ${booking.cars[0].make} ${booking.cars[0].model}`
+                            : 'Unknown'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-500">
+                          {format(new Date(booking.start_date), 'MMM d')}
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge variant={getStatusBadgeVariant(booking.status)} size="sm">
+                            {BOOKING_STATUS_LABELS[booking.status]}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Quick Actions & Fleet Status */}
+        {/* Quick Actions */}
         <div className="space-y-6">
-          {/* Fleet Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CarIcon className="h-5 w-5 text-blue-600" />
-                Fleet Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[
-                { status: 'Available', count: vehicles.filter(v => v.status === 'available').length, color: 'success' },
-                { status: 'Rented', count: vehicles.filter(v => v.status === 'rented').length, color: 'info' },
-                { status: 'Maintenance', count: vehicles.filter(v => v.status === 'maintenance').length, color: 'warning' },
-              ].map((item) => (
-                <div key={item.status} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Badge variant={item.color as 'success' | 'info' | 'warning'} dot>
-                      {item.status}
-                    </Badge>
-                  </div>
-                  <span className="text-2xl font-bold text-slate-900">{item.count}</span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
           <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
+              <Link href="/admin/bookings?status=pending" className="block">
+                <div className="p-4 rounded-xl border-2 border-dashed border-amber-200 hover:border-amber-300 hover:bg-amber-50/50 transition-all cursor-pointer group">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-100 group-hover:bg-amber-200 transition-colors">
+                      <Clock className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900">Pending Bookings</p>
+                      <p className="text-sm text-slate-500">{stats.pendingBookings} awaiting review</p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
               <Link href="/admin/vehicles/new" className="block">
                 <div className="p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all cursor-pointer group">
                   <div className="flex items-center gap-3">

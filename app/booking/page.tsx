@@ -33,6 +33,7 @@ export default function BookingPage() {
 
   const [currentStep, setCurrentStep] = useState<BookingStep>('select-dates');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmationNumber, setConfirmationNumber] = useState<string | null>(null);
 
   useEffect(() => {
     if (!vehicle) {
@@ -51,14 +52,61 @@ export default function BookingPage() {
   }
 
   const handleBookingSubmit = async () => {
+    if (!vehicle || !dates.startDate || !dates.endDate || !pricing) {
+      showToast('Missing booking information', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simulate API call - in the future this will send email to client
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const bookingData = {
+        vehicleId: vehicle.id,
+        customerName: customerInfo.fullName || `${customerInfo.firstName} ${customerInfo.lastName}`,
+        customerEmail: customerInfo.email,
+        customerPhone: customerInfo.phone,
+        startDate: dates.startDate,
+        endDate: dates.endDate,
+        pickupTime: dates.pickupTime || '10:00',
+        returnTime: dates.returnTime || '10:00',
+        totalPrice: pricing.total,
+      };
+      console.log('Submitting booking:', bookingData);
 
-    setIsSubmitting(false);
-    showToast('Booking request submitted successfully!', 'success');
-    setCurrentStep('success');
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('API Error Response:', result);
+        // Show detailed validation errors if available
+        if (result.details?.fieldErrors) {
+          const fieldErrors = Object.entries(result.details.fieldErrors)
+            .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
+            .join('; ');
+          throw new Error(fieldErrors || result.error || 'Validation failed');
+        }
+        throw new Error(result.error || 'Failed to create booking');
+      }
+
+      setConfirmationNumber(result.confirmationNumber);
+      showToast('Booking request submitted successfully!', 'success');
+      setCurrentStep('success');
+    } catch (error) {
+      console.error('Booking error:', error);
+      showToast(
+        error instanceof Error ? error.message : 'Failed to submit booking',
+        'error'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleNewBooking = () => {
@@ -82,6 +130,11 @@ export default function BookingPage() {
                 <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
                   Booking Request Submitted!
                 </h1>
+                {confirmationNumber && (
+                  <p className="font-mono text-lg text-white bg-white/20 inline-block px-4 py-1 rounded-full mb-2">
+                    {confirmationNumber}
+                  </p>
+                )}
                 <p className="text-emerald-100">
                   We&apos;ll contact you shortly to confirm your reservation
                 </p>
