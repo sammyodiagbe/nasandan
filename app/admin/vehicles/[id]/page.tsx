@@ -1,11 +1,12 @@
 'use client';
 
-import { use, useState } from 'react';
-import { useRouter, notFound } from 'next/navigation';
+import { use, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { VehicleForm } from '@/components/admin';
-import { getVehicleById, vehicles } from '@/data';
+import { LoadingSpinner } from '@/components/shared';
+import { getVehicleById } from '@/data';
 import { useToast } from '@/lib/context';
 import type { Vehicle } from '@/types';
 
@@ -18,26 +19,42 @@ export default function EditVehiclePage({ params }: EditVehiclePageProps) {
   const router = useRouter();
   const { showToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const vehicle = getVehicleById(id);
+  useEffect(() => {
+    async function fetchVehicle() {
+      const foundVehicle = await getVehicleById(id);
+      setVehicle(foundVehicle || null);
+      setLoading(false);
+    }
+    fetchVehicle();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   if (!vehicle) {
-    notFound();
+    return (
+      <div className="text-center py-20">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Vehicle Not Found</h1>
+        <Link href="/admin/vehicles" className="text-blue-600 hover:underline">
+          Back to Vehicles
+        </Link>
+      </div>
+    );
   }
 
   const handleSubmit = async (data: Partial<Vehicle>) => {
     setIsSubmitting(true);
 
+    // In a real app, this would update the vehicle in Supabase
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const index = vehicles.findIndex((v) => v.id === id);
-    if (index !== -1) {
-      vehicles[index] = {
-        ...vehicles[index],
-        ...data,
-        updatedAt: new Date().toISOString(),
-      };
-    }
 
     showToast('Vehicle updated successfully', 'success');
     setIsSubmitting(false);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Calendar, Car, MapPin } from 'lucide-react';
 import { Container } from '@/components/shared';
@@ -9,29 +9,34 @@ import { Card, CardContent, CardHeader, CardTitle, Input, Button, Badge } from '
 import { getBookingByConfirmation, getVehicleById } from '@/data';
 import { formatDate, formatTime, formatCurrency } from '@/lib/utils';
 import { BOOKING_STATUS_LABELS } from '@/types';
-import type { Booking } from '@/types';
+import type { Booking, Vehicle } from '@/types';
 
 export default function BookingLookupPage() {
   const router = useRouter();
   const [confirmationNumber, setConfirmationNumber] = useState('');
   const [booking, setBooking] = useState<Booking | null>(null);
+  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [searching, setSearching] = useState(false);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setError('');
     setHasSearched(true);
+    setSearching(true);
 
     const found = getBookingByConfirmation(confirmationNumber.trim());
     if (found) {
       setBooking(found);
+      const foundVehicle = await getVehicleById(found.vehicleId);
+      setVehicle(foundVehicle || null);
     } else {
       setBooking(null);
+      setVehicle(null);
       setError('No booking found with that confirmation number. Please check and try again.');
     }
+    setSearching(false);
   };
-
-  const vehicle = booking ? getVehicleById(booking.vehicleId) : null;
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -68,8 +73,8 @@ export default function BookingLookupPage() {
                   leftIcon={<Search className="h-4 w-4" />}
                   className="flex-1"
                 />
-                <Button onClick={handleSearch} disabled={!confirmationNumber.trim()}>
-                  Search
+                <Button onClick={handleSearch} disabled={!confirmationNumber.trim() || searching}>
+                  {searching ? 'Searching...' : 'Search'}
                 </Button>
               </div>
               {error && (

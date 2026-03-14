@@ -4,8 +4,8 @@ import { Container } from '@/components/shared';
 import { VehicleCard } from '@/components/vehicles';
 import { getFeaturedVehicles } from '@/data';
 
-export function FeaturedVehicles() {
-  const vehicles = getFeaturedVehicles();
+export async function FeaturedVehicles() {
+  const vehicles = await getFeaturedVehicles();
 
   return (
     <section className="py-20 md:py-28 bg-white">
@@ -31,15 +31,21 @@ export function FeaturedVehicles() {
 
         {/* Vehicle Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {vehicles.map((vehicle, index) => (
-            <div
-              key={vehicle.id}
-              className="animate-slide-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <VehicleCard vehicle={vehicle} />
+          {vehicles.length > 0 ? (
+            vehicles.map((vehicle, index) => (
+              <div
+                key={vehicle.id}
+                className="animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <VehicleCard vehicle={vehicle} />
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12 text-slate-500">
+              No vehicles available at the moment. Check back soon!
             </div>
-          ))}
+          )}
         </div>
       </Container>
     </section>

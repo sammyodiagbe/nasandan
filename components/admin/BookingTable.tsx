@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Eye, MoreVertical } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { Badge, Button, Select } from '@/components/ui';
 import { formatDate, formatCurrency } from '@/lib/utils';
-import type { Booking, BookingStatus } from '@/types';
+import type { Booking, BookingStatus, Vehicle } from '@/types';
 import { BOOKING_STATUS_LABELS } from '@/types';
 import { getVehicleById } from '@/data';
 
@@ -14,7 +14,28 @@ interface BookingTableProps {
   onStatusChange?: (bookingId: string, status: BookingStatus) => void;
 }
 
+interface BookingWithVehicle extends Booking {
+  vehicle?: Vehicle;
+}
+
 export function BookingTable({ bookings, onStatusChange }: BookingTableProps) {
+  const [bookingsWithVehicles, setBookingsWithVehicles] = useState<BookingWithVehicle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchVehicles() {
+      const enhanced = await Promise.all(
+        bookings.map(async (booking) => {
+          const vehicle = await getVehicleById(booking.vehicleId);
+          return { ...booking, vehicle };
+        })
+      );
+      setBookingsWithVehicles(enhanced);
+      setLoading(false);
+    }
+    fetchVehicles();
+  }, [bookings]);
+
   const getStatusBadgeVariant = (status: BookingStatus) => {
     switch (status) {
       case 'pending': return 'warning';
@@ -30,6 +51,14 @@ export function BookingTable({ bookings, onStatusChange }: BookingTableProps) {
     value,
     label,
   }));
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-[#E8AC41] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -57,8 +86,8 @@ export function BookingTable({ bookings, onStatusChange }: BookingTableProps) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          {bookings.map((booking) => {
-            const vehicle = getVehicleById(booking.vehicleId);
+          {bookingsWithVehicles.map((booking) => {
+            const vehicle = booking.vehicle;
             return (
               <tr key={booking.id} className="hover:bg-gray-50">
                 <td className="px-4 py-4">

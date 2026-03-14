@@ -1,21 +1,61 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, Calendar, MapPin, Printer, Home } from 'lucide-react';
 import { Container } from '@/components/shared';
 import { Header, Footer } from '@/components/layout';
-import { Card, CardContent, Button, Badge } from '@/components/ui';
+import { Card, CardContent, Button } from '@/components/ui';
 import { getBookingByConfirmation, getVehicleById } from '@/data';
 import { formatDate, formatTime, formatCurrency } from '@/lib/utils';
+import type { Booking, Vehicle } from '@/types';
 
 function BookingConfirmationContent() {
   const searchParams = useSearchParams();
   const confirmationNumber = searchParams.get('confirmation');
 
-  const booking = confirmationNumber ? getBookingByConfirmation(confirmationNumber) : null;
-  const vehicle = booking ? getVehicleById(booking.vehicleId) : null;
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (!confirmationNumber) {
+        setLoading(false);
+        return;
+      }
+
+      const foundBooking = getBookingByConfirmation(confirmationNumber);
+      if (foundBooking) {
+        setBooking(foundBooking);
+        const foundVehicle = await getVehicleById(foundBooking.vehicleId);
+        if (foundVehicle) {
+          setVehicle(foundVehicle);
+        }
+      }
+      setLoading(false);
+    }
+
+    fetchData();
+  }, [confirmationNumber]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 bg-gray-50 py-16">
+          <Container size="md">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-slate-200 border-t-[#E8AC41] rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-slate-600">Loading confirmation...</p>
+            </div>
+          </Container>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!booking || !vehicle) {
     return (

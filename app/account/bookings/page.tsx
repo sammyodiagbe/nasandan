@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, ArrowLeft, Car } from 'lucide-react';
@@ -11,10 +11,17 @@ import { useCustomerAuth } from '@/lib/context';
 import { getBookingsByCustomerId, getVehicleById } from '@/data';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import { BOOKING_STATUS_LABELS } from '@/types';
+import type { Vehicle, Booking } from '@/types';
+
+interface BookingWithVehicle extends Booking {
+  vehicle?: Vehicle;
+}
 
 export default function BookingsPage() {
   const router = useRouter();
   const { customer, isLoading } = useCustomerAuth();
+  const [bookingsWithVehicles, setBookingsWithVehicles] = useState<BookingWithVehicle[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
 
   useEffect(() => {
     if (!isLoading && !customer) {
@@ -22,7 +29,27 @@ export default function BookingsPage() {
     }
   }, [isLoading, customer, router]);
 
-  if (isLoading) {
+  useEffect(() => {
+    async function fetchBookingsWithVehicles() {
+      if (!customer) return;
+
+      const bookings = getBookingsByCustomerId(customer.id);
+      const bookingsWithVehicleData: BookingWithVehicle[] = await Promise.all(
+        bookings.map(async (booking) => {
+          const vehicle = await getVehicleById(booking.vehicleId);
+          return { ...booking, vehicle };
+        })
+      );
+      setBookingsWithVehicles(bookingsWithVehicleData);
+      setLoadingBookings(false);
+    }
+
+    if (customer) {
+      fetchBookingsWithVehicles();
+    }
+  }, [customer]);
+
+  if (isLoading || loadingBookings) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -37,8 +64,6 @@ export default function BookingsPage() {
   if (!customer) {
     return null;
   }
-
-  const bookings = getBookingsByCustomerId(customer.id);
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -68,7 +93,7 @@ export default function BookingsPage() {
             <p className="text-gray-600">View and manage your rental bookings</p>
           </div>
 
-          {bookings.length === 0 ? (
+          {bookingsWithVehicles.length === 0 ? (
             <Card>
               <CardContent className="py-12">
                 <EmptyState
@@ -85,8 +110,8 @@ export default function BookingsPage() {
             </Card>
           ) : (
             <div className="space-y-4">
-              {bookings.map((booking) => {
-                const vehicle = getVehicleById(booking.vehicleId);
+              {bookingsWithVehicles.map((booking) => {
+                const vehicle = booking.vehicle;
                 return (
                   <Card key={booking.id}>
                     <CardContent className="p-6">

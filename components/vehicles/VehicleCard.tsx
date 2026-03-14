@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Users, Fuel, Settings2, ArrowRight } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import type { Vehicle } from '@/types';
@@ -10,24 +11,35 @@ interface VehicleCardProps {
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
   const categoryInfo = VEHICLE_CATEGORIES[vehicle.category];
+  const hasImage = vehicle.thumbnail && vehicle.thumbnail !== '/vehicles/default-thumb.jpg';
 
   return (
     <Link href={`/vehicles/${vehicle.id}`} className="block group">
       <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-200/50 hover:-translate-y-1">
         {/* Image Area */}
         <div className="relative h-44 bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden">
-          {/* Car placeholder illustration */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative">
-              {/* Car body */}
-              <div className="w-28 h-14 bg-gradient-to-br from-slate-300 to-slate-400 rounded-xl transform group-hover:scale-105 transition-transform duration-300" />
-              {/* Wheels */}
-              <div className="absolute -bottom-2 left-2 w-6 h-6 bg-slate-500 rounded-full border-4 border-slate-300" />
-              <div className="absolute -bottom-2 right-2 w-6 h-6 bg-slate-500 rounded-full border-4 border-slate-300" />
-              {/* Window */}
-              <div className="absolute top-1 left-6 right-6 h-5 bg-slate-200/80 rounded-t-lg" />
+          {hasImage ? (
+            <Image
+              src={vehicle.thumbnail}
+              alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+              fill
+              className="object-contain p-2 transform group-hover:scale-105 transition-transform duration-300"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            />
+          ) : (
+            /* Car placeholder illustration */
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative">
+                {/* Car body */}
+                <div className="w-28 h-14 bg-gradient-to-br from-slate-300 to-slate-400 rounded-xl transform group-hover:scale-105 transition-transform duration-300" />
+                {/* Wheels */}
+                <div className="absolute -bottom-2 left-2 w-6 h-6 bg-slate-500 rounded-full border-4 border-slate-300" />
+                <div className="absolute -bottom-2 right-2 w-6 h-6 bg-slate-500 rounded-full border-4 border-slate-300" />
+                {/* Window */}
+                <div className="absolute top-1 left-6 right-6 h-5 bg-slate-200/80 rounded-t-lg" />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Category Badge */}
           <div className="absolute top-3 left-3">

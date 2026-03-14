@@ -1,13 +1,15 @@
 'use client';
 
-import { use, useState } from 'react';
-import { notFound, useRouter } from 'next/navigation';
+import { use, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, MapPin, User, CreditCard, Car } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button, Select } from '@/components/ui';
+import { LoadingSpinner } from '@/components/shared';
 import { getBookingById, getVehicleById, getCustomerById, bookings } from '@/data';
 import { formatDate, formatTime, formatCurrency } from '@/lib/utils';
 import { BOOKING_STATUS_LABELS, BookingStatus } from '@/types';
+import type { Vehicle, Booking, Customer } from '@/types';
 import { useToast } from '@/lib/context';
 
 interface BookingDetailPageProps {
@@ -19,16 +21,51 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
   const router = useRouter();
   const { showToast } = useToast();
 
-  const booking = getBookingById(id);
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<BookingStatus>('pending');
 
-  if (!booking) {
-    notFound();
+  useEffect(() => {
+    async function fetchData() {
+      const foundBooking = getBookingById(id);
+      if (foundBooking) {
+        setBooking(foundBooking);
+        setStatus(foundBooking.status);
+
+        const [foundVehicle, foundCustomer] = await Promise.all([
+          getVehicleById(foundBooking.vehicleId),
+          Promise.resolve(getCustomerById(foundBooking.customerId))
+        ]);
+
+        setVehicle(foundVehicle || null);
+        setCustomer(foundCustomer || null);
+      }
+      setLoading(false);
+    }
+
+    fetchData();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
-  const vehicle = getVehicleById(booking.vehicleId);
-  const customer = getCustomerById(booking.customerId);
-
-  const [status, setStatus] = useState(booking.status);
+  if (!booking) {
+    return (
+      <div className="text-center py-20">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Booking Not Found</h1>
+        <Link href="/admin/bookings" className="text-blue-600 hover:underline">
+          Back to Bookings
+        </Link>
+      </div>
+    );
+  }
 
   const handleStatusUpdate = () => {
     const index = bookings.findIndex((b) => b.id === id);
@@ -103,7 +140,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                       {vehicle.year} {vehicle.make} {vehicle.model}
                     </p>
                     <p className="text-sm text-gray-500 capitalize">
-                      {vehicle.category} • {vehicle.transmission} • {vehicle.licensePlate}
+                      {vehicle.category} • {vehicle.transmission} • {vehicle.licensePlate || 'N/A'}
                     </p>
                   </div>
                 </div>

@@ -1,8 +1,9 @@
 'use client';
 
-import { use } from 'react';
-import { notFound, useRouter } from 'next/navigation';
+import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Users,
   Fuel,
@@ -14,13 +15,14 @@ import {
   Shield,
   Star,
 } from 'lucide-react';
-import { Container } from '@/components/shared';
+import { Container, LoadingSpinner } from '@/components/shared';
 import { Header, Footer } from '@/components/layout';
 import { BookingExtras, PriceBreakdown } from '@/components/booking';
 import { getVehicleById } from '@/data';
 import { useBooking, useToast } from '@/lib/context';
 import { formatCurrency, toISODateString, getMinBookingDate, calculateRentalPrice } from '@/lib/utils';
 import { VEHICLE_CATEGORIES, FEATURE_LABELS } from '@/types';
+import type { Vehicle } from '@/types';
 import { addDays } from 'date-fns';
 
 interface VehicleDetailPageProps {
@@ -33,10 +35,50 @@ export default function VehicleDetailPage({ params }: VehicleDetailPageProps) {
   const { setVehicle, setDates, extras, calculatePrice, pricing } = useBooking();
   const { showToast } = useToast();
 
-  const vehicle = getVehicleById(id);
+  const [vehicle, setVehicleState] = useState<Vehicle | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchVehicle() {
+      try {
+        const data = await getVehicleById(id);
+        if (data) {
+          setVehicleState(data);
+        }
+      } catch (error) {
+        console.error('Error fetching vehicle:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchVehicle();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#f7f5f2]">
+        <Header />
+        <div className="flex-1 flex items-center justify-center pt-[72px]">
+          <LoadingSpinner size="lg" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!vehicle) {
-    notFound();
+    return (
+      <div className="min-h-screen flex flex-col bg-[#f7f5f2]">
+        <Header />
+        <div className="flex-1 flex flex-col items-center justify-center pt-[72px]">
+          <h1 className="text-2xl font-bold text-[#0c2340] mb-4">Vehicle Not Found</h1>
+          <Link href="/vehicles" className="text-[#E8AC41] hover:underline">
+            Back to vehicles
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   const categoryInfo = VEHICLE_CATEGORIES[vehicle.category];
@@ -102,18 +144,28 @@ export default function VehicleDetailPage({ params }: VehicleDetailPageProps) {
             <div className="lg:col-span-2 space-y-6">
               {/* Hero Image */}
               <div className="relative h-72 md:h-96 bg-gradient-to-br from-slate-100 to-slate-50 rounded-2xl overflow-hidden border border-slate-200">
-                {/* Car placeholder illustration */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative scale-150">
-                    {/* Car body */}
-                    <div className="w-28 h-14 bg-gradient-to-br from-slate-300 to-slate-400 rounded-xl" />
-                    {/* Wheels */}
-                    <div className="absolute -bottom-2 left-2 w-6 h-6 bg-slate-500 rounded-full border-4 border-slate-300" />
-                    <div className="absolute -bottom-2 right-2 w-6 h-6 bg-slate-500 rounded-full border-4 border-slate-300" />
-                    {/* Window */}
-                    <div className="absolute top-1 left-6 right-6 h-5 bg-slate-200/80 rounded-t-lg" />
+                {vehicle.thumbnail && vehicle.thumbnail !== '/vehicles/default-thumb.jpg' ? (
+                  <Image
+                    src={vehicle.thumbnail}
+                    alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                    fill
+                    className="object-contain p-4"
+                    sizes="(max-width: 768px) 100vw, 66vw"
+                  />
+                ) : (
+                  /* Car placeholder illustration */
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative scale-150">
+                      {/* Car body */}
+                      <div className="w-28 h-14 bg-gradient-to-br from-slate-300 to-slate-400 rounded-xl" />
+                      {/* Wheels */}
+                      <div className="absolute -bottom-2 left-2 w-6 h-6 bg-slate-500 rounded-full border-4 border-slate-300" />
+                      <div className="absolute -bottom-2 right-2 w-6 h-6 bg-slate-500 rounded-full border-4 border-slate-300" />
+                      {/* Window */}
+                      <div className="absolute top-1 left-6 right-6 h-5 bg-slate-200/80 rounded-t-lg" />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Rating badge */}
                 <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg">
