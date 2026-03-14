@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MapPin, Calendar, Search, ChevronDown, Star, Shield, Users } from 'lucide-react';
+import { MapPin, Calendar, Search, Star, Shield, Users } from 'lucide-react';
 import { Container } from '@/components/shared';
 import { PICKUP_LOCATIONS } from '@/types';
 import { toISODateString, getMinBookingDate } from '@/lib/utils';
@@ -10,13 +10,12 @@ import { toISODateString, getMinBookingDate } from '@/lib/utils';
 export function Hero() {
   const router = useRouter();
   const today = toISODateString(getMinBookingDate());
-  const [pickupLocation, setPickupLocation] = useState('');
   const [pickupDate, setPickupDate] = useState(today);
   const [returnDate, setReturnDate] = useState('');
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (pickupLocation) params.set('location', pickupLocation);
+    params.set('location', PICKUP_LOCATIONS[0]);
     if (pickupDate) params.set('startDate', pickupDate);
     if (returnDate) params.set('endDate', returnDate);
     router.push(`/vehicles?${params.toString()}`);
@@ -87,19 +86,9 @@ export function Hero() {
                   <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
                     Pick-up Location
                   </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                    <select
-                      value={pickupLocation}
-                      onChange={(e) => setPickupLocation(e.target.value)}
-                      className="w-full pl-10 pr-10 py-3.5 text-[15px] font-medium text-slate-900 bg-slate-50 border-2 border-slate-100 rounded-xl appearance-none cursor-pointer hover:border-slate-200 focus:border-[#0c2340] focus:bg-white focus:ring-4 focus:ring-[#0c2340]/5 transition-all outline-none"
-                    >
-                      <option value="">Select location</option>
-                      {PICKUP_LOCATIONS.map((loc) => (
-                        <option key={loc} value={loc}>{loc}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                  <div className="flex items-center gap-2 pl-3 pr-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl">
+                    <MapPin className="h-5 w-5 text-[#E8AC41] flex-shrink-0" />
+                    <span className="text-[15px] font-medium text-slate-900">{PICKUP_LOCATIONS[0]}</span>
                   </div>
                 </div>
 

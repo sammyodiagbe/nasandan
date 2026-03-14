@@ -231,3 +231,78 @@ export function generateConfirmationNumber(): string {
   const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
   return `NR-${year}-${random}`;
 }
+
+// Supabase booking functions
+import { supabase } from '@/lib/supabase';
+import { eachDayOfInterval, parseISO } from 'date-fns';
+
+export interface BookedDateRange {
+  start_date: string;
+  end_date: string;
+}
+
+// Fetch booked date ranges for a specific vehicle
+export async function getBookedDatesForVehicle(vehicleId: string): Promise<Date[]> {
+  const { data, error } = await supabase
+    .from('bookings')
+    .select('start_date, end_date')
+    .eq('car_id', vehicleId)
+    .in('status', ['confirmed', 'active', 'pending'])
+    .gte('end_date', new Date().toISOString().split('T')[0]);
+
+  if (error) {
+    console.error('Error fetching booked dates:', error);
+    return [];
+  }
+
+  // Convert date ranges to individual dates
+  const bookedDates: Date[] = [];
+  for (const booking of data || []) {
+    const dates = eachDayOfInterval({
+      start: parseISO(booking.start_date),
+      end: parseISO(booking.end_date),
+    });
+    bookedDates.push(...dates);
+  }
+
+  return bookedDates;
+}
+
+// Create a new booking in Supabase
+export async function createBooking(booking: {
+  carId: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  startDate: string;
+  endDate: string;
+  pickupTime?: string;
+  returnTime?: string;
+  totalPrice: number;
+  notes?: string;
+}): Promise<{ success: boolean; confirmationNumber?: string; error?: string }> {
+  const { data, error } = await supabase
+    .from('bookings')
+    .insert({
+      car_id: booking.carId,
+      customer_name: booking.customerName,
+      customer_email: booking.customerEmail,
+      customer_phone: booking.customerPhone,
+      start_date: booking.startDate,
+      end_date: booking.endDate,
+      pickup_time: booking.pickupTime || '10:00',
+      return_time: booking.returnTime || '10:00',
+      total_price: booking.totalPrice,
+      notes: booking.notes,
+      status: 'confirmed',
+    })
+    .select('confirmation_number')
+    .single();
+
+  if (error) {
+    console.error('Error creating booking:', error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, confirmationNumber: data?.confirmation_number };
+}

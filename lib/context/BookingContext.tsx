@@ -17,6 +17,10 @@ export interface CustomerInfo {
   city: string;
   state: string;
   zipCode: string;
+  // Simplified booking fields
+  fullName: string;
+  age: string;
+  hasFullLicense: boolean | null;
 }
 
 export type BookingStep = 'select-dates' | 'customer-info' | 'review' | 'confirmation';

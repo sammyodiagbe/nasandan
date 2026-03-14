@@ -2,19 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { CheckCircle, Calendar, Car, MapPin, Phone, User } from 'lucide-react';
 import { Container } from '@/components/shared';
 import { Header, Footer } from '@/components/layout';
-import { Card, CardContent } from '@/components/ui';
+import { Card, CardContent, Button } from '@/components/ui';
 import {
-  BookingSteps,
   DateRangePicker,
   CustomerInfoForm,
-  BookingReview,
   PriceBreakdown,
-  BookingExtras,
 } from '@/components/booking';
 import { useBooking, useToast } from '@/lib/context';
-import { generateConfirmationNumber, bookings } from '@/data';
+import { PICKUP_LOCATIONS } from '@/types';
+import { formatCurrency } from '@/lib/utils';
+import { format } from 'date-fns';
+
+type BookingStep = 'select-dates' | 'customer-info' | 'success';
 
 export default function BookingPage() {
   const router = useRouter();
@@ -22,14 +25,13 @@ export default function BookingPage() {
   const {
     vehicle,
     dates,
-    extras,
-    customerInfo,
     pricing,
-    currentStep,
-    setCurrentStep,
-    setConfirmationNumber,
+    customerInfo,
     calculatePrice,
+    resetBooking,
   } = useBooking();
+
+  const [currentStep, setCurrentStep] = useState<BookingStep>('select-dates');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -42,76 +44,193 @@ export default function BookingPage() {
     if (vehicle && dates.startDate && dates.endDate) {
       calculatePrice();
     }
-  }, [extras, calculatePrice, vehicle, dates.startDate, dates.endDate]);
+  }, [vehicle, dates.startDate, dates.endDate, calculatePrice]);
 
   if (!vehicle) {
     return null;
   }
 
-  const handleConfirmBooking = async () => {
+  const handleBookingSubmit = async () => {
     setIsSubmitting(true);
 
+    // Simulate API call - in the future this will send email to client
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const confirmationNumber = generateConfirmationNumber();
-
-    const newBooking = {
-      id: `b${bookings.length + 1}`,
-      confirmationNumber,
-      vehicleId: vehicle.id,
-      customerId: 'guest',
-      dates: {
-        startDate: dates.startDate!,
-        endDate: dates.endDate!,
-        pickupTime: dates.pickupTime || '10:00',
-        returnTime: dates.returnTime || '10:00',
-      },
-      pricing: pricing!,
-      extras,
-      status: 'confirmed' as const,
-      pickupLocation: 'Main Office - 123 Downtown Ave',
-      returnLocation: 'Main Office - 123 Downtown Ave',
-      notes: '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    bookings.push(newBooking);
-
-    setConfirmationNumber(confirmationNumber);
     setIsSubmitting(false);
-    showToast('Booking confirmed successfully!', 'success');
-    setCurrentStep('confirmation');
-    router.push(`/booking/confirmation?confirmation=${confirmationNumber}`);
+    showToast('Booking request submitted successfully!', 'success');
+    setCurrentStep('success');
   };
 
+  const handleNewBooking = () => {
+    resetBooking();
+    router.push('/vehicles');
+  };
+
+  // Success Screen
+  if (currentStep === 'success') {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 bg-gradient-to-b from-[#0c2340] to-[#0c2340]/90 py-12">
+          <Container size="sm">
+            <Card className="overflow-hidden">
+              {/* Success Header */}
+              <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-8 text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-4">
+                  <CheckCircle className="h-10 w-10 text-emerald-500" />
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                  Booking Request Submitted!
+                </h1>
+                <p className="text-emerald-100">
+                  We&apos;ll contact you shortly to confirm your reservation
+                </p>
+              </div>
+
+              <CardContent className="p-6 md:p-8 space-y-6">
+                {/* Booking Summary */}
+                <div className="space-y-4">
+                  <h2 className="font-semibold text-[#0c2340] text-lg">Booking Summary</h2>
+
+                  {/* Vehicle */}
+                  <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
+                    <div className="w-16 h-12 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+                      {vehicle.thumbnail && vehicle.thumbnail !== '/vehicles/default-thumb.jpg' ? (
+                        <Image
+                          src={vehicle.thumbnail}
+                          alt={vehicle.model}
+                          width={64}
+                          height={48}
+                          className="object-contain"
+                        />
+                      ) : (
+                        <Car className="h-6 w-6 text-slate-400" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[#0c2340]">
+                        {vehicle.year} {vehicle.make} {vehicle.model}
+                      </p>
+                      <p className="text-sm text-slate-500">{vehicle.color}</p>
+                    </div>
+                  </div>
+
+                  {/* Dates */}
+                  <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl">
+                    <Calendar className="h-5 w-5 text-[#E8AC41] mt-0.5" />
+                    <div>
+                      <p className="font-medium text-[#0c2340]">Rental Period</p>
+                      <p className="text-sm text-slate-600">
+                        {dates.startDate && format(new Date(dates.startDate), 'MMM d, yyyy')} — {dates.endDate && format(new Date(dates.endDate), 'MMM d, yyyy')}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        Pickup: {dates.pickupTime || '10:00'} • Return: {dates.returnTime || '10:00'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl">
+                    <MapPin className="h-5 w-5 text-[#E8AC41] mt-0.5" />
+                    <div>
+                      <p className="font-medium text-[#0c2340]">Pickup Location</p>
+                      <p className="text-sm text-slate-600">{PICKUP_LOCATIONS[0]}</p>
+                    </div>
+                  </div>
+
+                  {/* Customer Info */}
+                  <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl">
+                    <User className="h-5 w-5 text-[#E8AC41] mt-0.5" />
+                    <div>
+                      <p className="font-medium text-[#0c2340]">
+                        {customerInfo.fullName || `${customerInfo.firstName} ${customerInfo.lastName}`}
+                      </p>
+                      <p className="text-sm text-slate-600 flex items-center gap-1">
+                        <Phone className="h-3.5 w-3.5" />
+                        {customerInfo.phone}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Total */}
+                  {pricing && (
+                    <div className="flex items-center justify-between p-4 bg-[#0c2340] rounded-xl text-white">
+                      <span className="font-medium">Estimated Total</span>
+                      <span className="text-2xl font-bold">{formatCurrency(pricing.total)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Next Steps */}
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                  <h3 className="font-semibold text-amber-800 mb-2">What happens next?</h3>
+                  <ul className="text-sm text-amber-700 space-y-1">
+                    <li>• We&apos;ll review your booking request</li>
+                    <li>• You&apos;ll receive a call or text to confirm availability</li>
+                    <li>• Bring a valid driver&apos;s license when picking up</li>
+                  </ul>
+                </div>
+
+                {/* Action */}
+                <Button onClick={handleNewBooking} className="w-full" size="lg">
+                  Browse More Vehicles
+                </Button>
+              </CardContent>
+            </Card>
+          </Container>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Booking Flow
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 bg-gray-50 py-8">
         <Container size="md">
-          <h1 className="text-3xl font-bold text-gray-900 text-center mb-6">
+          <h1 className="text-3xl font-bold text-[#0c2340] text-center mb-2">
             Complete Your Booking
           </h1>
+          <p className="text-slate-500 text-center mb-8">
+            {currentStep === 'select-dates' ? 'Step 1 of 2: Select your dates' : 'Step 2 of 2: Your details'}
+          </p>
 
-          <BookingSteps currentStep={currentStep} />
+          {/* Progress Bar */}
+          <div className="flex items-center gap-2 mb-8 max-w-xs mx-auto">
+            <div className={`h-2 flex-1 rounded-full ${currentStep === 'select-dates' ? 'bg-[#E8AC41]' : 'bg-[#E8AC41]'}`} />
+            <div className={`h-2 flex-1 rounded-full ${currentStep === 'customer-info' ? 'bg-[#E8AC41]' : 'bg-slate-200'}`} />
+          </div>
 
           {/* Vehicle Summary */}
           <Card className="mb-6">
             <CardContent className="p-4">
               <div className="flex items-center gap-4">
-                <div className="w-20 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 flex-shrink-0">
-                  <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
+                <div className="w-20 h-14 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden">
+                  {vehicle.thumbnail && vehicle.thumbnail !== '/vehicles/default-thumb.jpg' ? (
+                    <Image
+                      src={vehicle.thumbnail}
+                      alt={vehicle.model}
+                      width={80}
+                      height={56}
+                      className="object-contain"
+                    />
+                  ) : (
+                    <Car className="h-8 w-8 text-slate-400" />
+                  )}
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-[#0c2340]">
                     {vehicle.year} {vehicle.make} {vehicle.model}
                   </h3>
-                  <p className="text-sm text-gray-500 capitalize">
-                    {vehicle.category} • {vehicle.transmission} • {vehicle.fuelType}
+                  <p className="text-sm text-slate-500">
+                    {vehicle.color} • {vehicle.seats} seats • {vehicle.transmission}
                   </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-[#0c2340]">{formatCurrency(vehicle.dailyRate)}</p>
+                  <p className="text-xs text-slate-500">per day</p>
                 </div>
               </div>
             </CardContent>
@@ -127,25 +246,15 @@ export default function BookingPage() {
               {currentStep === 'customer-info' && (
                 <CustomerInfoForm
                   onBack={() => setCurrentStep('select-dates')}
-                  onContinue={() => setCurrentStep('review')}
-                />
-              )}
-
-              {currentStep === 'review' && (
-                <BookingReview
-                  onBack={() => setCurrentStep('customer-info')}
-                  onConfirm={handleConfirmBooking}
+                  onSubmit={handleBookingSubmit}
                   isSubmitting={isSubmitting}
                 />
               )}
             </div>
 
-            {currentStep !== 'review' && (
-              <div className="space-y-4">
-                <BookingExtras />
-                {pricing && <PriceBreakdown vehicle={vehicle} pricing={pricing} />}
-              </div>
-            )}
+            <div className="space-y-4">
+              {pricing && <PriceBreakdown vehicle={vehicle} pricing={pricing} />}
+            </div>
           </div>
         </Container>
       </main>

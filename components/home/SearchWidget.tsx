@@ -3,30 +3,24 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MapPin, Calendar, Search } from 'lucide-react';
-import { Button, Select } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { PICKUP_LOCATIONS } from '@/types';
 import { toISODateString, getMinBookingDate } from '@/lib/utils';
 
 export function SearchWidget() {
   const router = useRouter();
   const today = toISODateString(getMinBookingDate());
-  const [pickupLocation, setPickupLocation] = useState('');
   const [pickupDate, setPickupDate] = useState(today);
   const [returnDate, setReturnDate] = useState('');
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (pickupLocation) params.set('location', pickupLocation);
+    params.set('location', PICKUP_LOCATIONS[0]);
     if (pickupDate) params.set('startDate', pickupDate);
     if (returnDate) params.set('endDate', returnDate);
 
     router.push(`/vehicles?${params.toString()}`);
   };
-
-  const locationOptions = PICKUP_LOCATIONS.map((loc) => ({
-    value: loc,
-    label: loc,
-  }));
 
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
@@ -37,12 +31,10 @@ export function SearchWidget() {
             <MapPin className="h-4 w-4 inline-block mr-1" />
             Pickup Location
           </label>
-          <Select
-            options={locationOptions}
-            placeholder="Select location"
-            value={pickupLocation}
-            onChange={(e) => setPickupLocation(e.target.value)}
-          />
+          <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700">
+            <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0" />
+            <span className="text-sm font-medium">{PICKUP_LOCATIONS[0]}</span>
+          </div>
         </div>
 
         {/* Pickup Date */}

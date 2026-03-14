@@ -65,10 +65,7 @@ export const BOOKING_STATUS_COLORS: Record<BookingStatus, string> = {
 };
 
 export const PICKUP_LOCATIONS = [
-  'Main Office - 123 Downtown Ave',
-  'Airport Terminal - Arrivals Hall',
-  'Northside Branch - 456 Oak Street',
-  'Eastside Location - 789 Elm Road',
+  '235 Bridgeland Drive S',
 ] as const;
 
 export const PICKUP_TIMES = [
